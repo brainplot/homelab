@@ -1,0 +1,7 @@
+- name: Render /etc/profile/editor.sh
+  become: true
+  ansible.builtin.template:
+    dest: /etc/profile.d/editor.sh
+    src: editor.sh.j2
+    mode: '0644'
+    force: true

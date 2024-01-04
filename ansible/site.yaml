@@ -1,3 +1,11 @@
 - name: Set up ansible host
   hosts: all
   roles: [ansible]
+
+- name: Set up common things
+  hosts: all
+  roles:
+    - admin
+    - ntp
+    - vim
+    - editor

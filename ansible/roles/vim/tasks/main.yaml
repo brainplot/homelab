@@ -1,0 +1,12 @@
+- become: true
+  block:
+    - name: Install vim
+      ansible.builtin.package:
+        name: vim
+
+    - name: Copy /etc/vim/vimrc.local
+      ansible.builtin.copy:
+        dest: /etc/vim/vimrc.local
+        src: vimrc.vim
+        mode: '0644'
+        force: true

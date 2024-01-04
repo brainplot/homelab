@@ -1,0 +1,19 @@
+- become: true
+  block:
+    - name: Create /etc/systemd/timesyncd.conf.d folder
+      ansible.builtin.file:
+        path: /etc/systemd/timesyncd.conf.d
+        state: directory
+
+    - name: Render NTP configuration
+      ansible.builtin.template:
+        dest: /etc/systemd/timesyncd.conf.d/server.conf
+        src: server.conf.j2
+        mode: '0644'
+        force: true
+
+    - name: Restart systemd-timesyncd
+      ansible.builtin.service:
+        name: systemd-timesyncd
+        enabled: true
+        state: restarted
