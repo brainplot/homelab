@@ -1,0 +1,21 @@
+- become: true
+  block:
+    - name: Disable all locales
+      ansible.builtin.lineinfile:
+        path: /etc/locale.gen
+        backrefs: true
+        line: '# \1'
+        regexp: '^([^#].+)'
+
+    - name: Enable C.UTF-8 and {{ lang }} locales
+      ansible.builtin.lineinfile:
+        path: /etc/locale.gen
+        backrefs: true
+        line: \1
+        regexp: '^#\s+({{ item | regex_escape }}.*)'
+      with_items:
+        - C.UTF-8
+        - '{{ lang }}'
+
+    - name: Run update-locale --reset LANG={{ lang }} LANGUAGE={{ language }}
+      ansible.builtin.command: update-locale --reset LANG={{ lang | quote }} LANGUAGE={{ language | quote }}
