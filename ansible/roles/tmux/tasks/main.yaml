@@ -1,0 +1,19 @@
+- name: Install tmux
+  become: true
+  ansible.builtin.package:
+    name: tmux
+
+- become: true
+  become_user: admin
+  block:
+    - name: Create ~/.config/tmux directory
+      ansible.builtin.file:
+        path: ~/.config/tmux
+        state: directory
+
+    - name: Copy tmux configuration
+      ansible.builtin.copy:
+        dest: ~/.config/tmux/tmux.conf
+        src: tmux.conf
+        mode: '0644'
+        force: true

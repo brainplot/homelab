@@ -10,6 +10,7 @@
     - vim
     - editor
     - locale
+    - tmux
 
 - name: Configure Raspberry Pis
   hosts: rpis
