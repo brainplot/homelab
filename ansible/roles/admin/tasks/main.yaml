@@ -1,19 +1,29 @@
-- name: Create admin user
-  become: true
-  ansible.builtin.user:
-    name: admin
-    comment: Admin
-    create_home: true
-    shell: /bin/bash
-    password: '*'
-    generate_ssh_key: false
-    state: present
-  register: admin_user
+- become: true
+  block:
+    - name: Create admin user
+      ansible.builtin.user:
+        name: admin
+        comment: Admin
+        create_home: true
+        shell: /bin/bash
+        groups: [sudo]
+        password: '*'
+        generate_ssh_key: false
+        state: present
+      register: admin_user
 
-- name: Add admin key to ~/.ssh/authorized_keys
-  become: true
-  ansible.posix.authorized_key:
-    user: '{{ admin_user.name }}'
-    key: '{{ admin_key }}'
-    manage_dir: true
-    state: present
+    - name: Add admin key to ~/.ssh/authorized_keys
+      ansible.posix.authorized_key:
+        user: '{{ admin_user.name }}'
+        key: '{{ admin_key }}'
+        manage_dir: true
+        state: present
+
+    - name: Allow admin to use passwordless sudo
+      ansible.builtin.template:
+        dest: /etc/sudoers.d/099_{{ admin_user.name }}
+        src: sudoer_no_passwd.txt.j2
+        mode: '0440'
+        force: true
+      vars:
+        user: '{{ admin_user.name }}'
