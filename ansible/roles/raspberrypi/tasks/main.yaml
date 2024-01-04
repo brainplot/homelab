@@ -1,0 +1,21 @@
+- become: true
+  block:
+    - name: Disable wifi
+      ansible.builtin.lineinfile:
+        path: /boot/config.txt
+        line: dtoverlay=disable-wifi
+        insertafter: '# /boot/firmware/overlays/README'
+      notify: Reboot
+
+    - name: Disable bluetooth
+      ansible.builtin.lineinfile:
+        path: /boot/config.txt
+        line: dtoverlay=disable-bt
+        insertafter: dtoverlay=disable-wifi
+      notify: Reboot
+
+    - name: Set kernel cmdline
+      ansible.builtin.template:
+        dest: /boot/cmdline.txt
+        src: cmdline.txt.j2
+        follow: true

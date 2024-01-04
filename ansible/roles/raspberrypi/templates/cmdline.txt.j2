@@ -1,0 +1,6 @@
+{% set consoles = ansible_proc_cmdline.console %}
+{% set root = ansible_proc_cmdline.root %}
+{% set rootfstype = ansible_proc_cmdline.rootfstype %}
+{% set fsck_repair = ansible_proc_cmdline['fsck.repair'] %}
+{% set rootwait = ansible_proc_cmdline.rootwait %}
+{% block cmdline %}console={{ consoles | join(' console=') }} root={{ root }} rootfstype={{ rootfstype }} fsck.repair={{ fsck_repair }}{% if rootwait %} rootwait{% endif %} cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1{% endblock cmdline %}

@@ -1,0 +1,21 @@
+- name: Configure Raspberry Pis
+  hosts: rpis
+  become: true
+  tasks:
+    - name: Disable wifi
+      ansible.builtin.lineinfile:
+        path: /boot/config.txt
+        line: dtoverlay=disable-wifi
+        insertafter: '# /boot/firmware/overlays/README'
+      notify: Reboot
+
+    - name: Disable bluetooth
+      ansible.builtin.lineinfile:
+        path: /boot/config.txt
+        line: dtoverlay=disable-bt
+        insertafter: dtoverlay=disable-wifi
+      notify: Reboot
+  handlers:
+    - name: Reboot
+      become: true
+      ansible.builtin.reboot: ~

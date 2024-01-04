@@ -1,3 +1,11 @@
-rpi:
+rpis:
+  hosts:
+    ares: ~
+
+kubernetescontrolplane:
+  hosts:
+    ares: ~
+
+kubernetesnodes:
   hosts:
     ares: ~
