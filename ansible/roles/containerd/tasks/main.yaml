@@ -1,0 +1,24 @@
+- become: true
+  block:
+    - name: Install containerd
+      ansible.builtin.package:
+        name: containerd
+
+    - name: Create /etc/containerd directory
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+
+    - name: Copy containerd configuration
+      ansible.builtin.copy:
+        src: containerd.toml
+        dest: /etc/containerd/config.toml
+        force: true
+        mode: '0644'
+      notify: Restart containerd
+
+    - name: Start and enable containerd
+      ansible.builtin.service:
+        enabled: true
+        name: containerd
+        state: started
