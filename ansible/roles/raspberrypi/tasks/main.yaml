@@ -19,3 +19,12 @@
         dest: /boot/cmdline.txt
         src: cmdline.txt.j2
         follow: true
+
+- name: Disable swap
+  become: true
+  block:
+    - name: Run dphys-swapfile swapoff
+      ansible.builtin.command: dphys-swapfile swapoff
+
+    - name: Run dphys-swapfile uninstall
+      ansible.builtin.command: dphys-swapfile uninstall
