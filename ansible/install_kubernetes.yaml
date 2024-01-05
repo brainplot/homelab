@@ -6,3 +6,4 @@
   hosts: kubernetescontrolplane
   roles:
     - kubernetes_control_plane
+    - kubeconfig
