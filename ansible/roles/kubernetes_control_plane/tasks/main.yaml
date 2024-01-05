@@ -74,3 +74,13 @@
       retries: 3
       delay: 3
       until: join_control_plane is not failed
+
+- name: Scale coredns deployment
+  become: true
+  kubernetes.core.k8s_scale:
+    api_version: apps/v1
+    kind: Deployment
+    name: coredns
+    namespace: kube-system
+    replicas: '{{ coredns_replicas | default(replicas) }}'
+    kubeconfig: /etc/kubernetes/admin.conf
