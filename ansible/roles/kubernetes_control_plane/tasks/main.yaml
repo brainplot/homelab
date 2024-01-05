@@ -5,29 +5,52 @@
     recurse: true
     state: directory
 
-- name: Copy Kubernetes intermediate CAs
-  become: true
-  ansible.builtin.copy:
-    src: pki/{{ item.src }}
-    dest: /etc/kubernetes/pki/{{ item.dest }}
-    force: true
-  with_items:
-    - { src: kubernetes-ca.crt, dest: ca.crt }
-    - { src: kubernetes-ca.key, dest: ca.key }
-    - { src: etcd-ca.crt, dest: etcd/ca.crt }
-    - { src: etcd-ca.key, dest: etcd/ca.key }
-    - { src: kubernetes-front-proxy-ca.crt, dest: front-proxy-ca.crt }
-    - { src: kubernetes-front-proxy-ca.key, dest: front-proxy-ca.key }
+- become: true
+  vars:
+    certificate_authorities:
+      - { cn: kubernetes-ca, crt: ca.crt, key: ca.key }
+      - { cn: etcd-ca, crt: etcd/ca.crt, key: etcd/ca.key }
+      - { cn: kubernetes-front-proxy-ca, crt: front-proxy-ca.crt, key: front-proxy-ca.key }
+  block:
+    - name: Create private key
+      community.crypto.openssl_privatekey:
+        path: /etc/kubernetes/pki/{{ item.key }}
+        type: ECC
+        curve: secp256r1
+        format_mismatch: convert
+        state: present
+      with_items: '{{ certificate_authorities }}'
+      when: inventory_hostname == ansible_play_hosts_all[0]
 
-- name: Read Kubernetes CA
-  become: true
-  ansible.builtin.slurp:
-    path: /etc/kubernetes/pki/ca.crt
-  register: kubernetes_ca
+    - name: Create certificate signing request (CSR) for CA certificate
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: /etc/kubernetes/pki/{{ item.key }}
+        common_name: '{{ item.cn }}'
+        use_common_name_for_san: false
+        basic_constraints:
+          - 'CA:TRUE'
+        basic_constraints_critical: true
+        key_usage:
+          - keyCertSign
+        key_usage_critical: true
+      with_items: '{{ certificate_authorities }}'
+      when: inventory_hostname == ansible_play_hosts_all[0]
+      register: ca_csr
 
-- name: Retrieve Kubernetes CA info
+    - name: Create self-signed CA certificate from CSR
+      community.crypto.x509_certificate:
+        path: /etc/kubernetes/pki/{{ item.item.crt }}
+        privatekey_path: /etc/kubernetes/pki/{{ item.item.key }}
+        csr_content: '{{ item.csr }}'
+        provider: selfsigned
+        state: present
+      with_items: '{{ ca_csr.results }}'
+      when: inventory_hostname == ansible_play_hosts_all[0]
+
+- name: Get information on Kubernetes CA
+  become: true
   community.crypto.x509_certificate_info:
-    content: '{{ kubernetes_ca.content | b64decode }}'
+    path: /etc/kubernetes/pki/ca.crt
   register: kubernetes_ca
 
 - vars:
