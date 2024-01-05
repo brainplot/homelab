@@ -2,7 +2,10 @@
   block:
     - name: Install packages
       ansible.builtin.package:
-        name: acl
+        name:
+          - acl
+          - python3-yaml
+          - git
 
     - name: Create /etc/ansible directory
       ansible.builtin.file:
