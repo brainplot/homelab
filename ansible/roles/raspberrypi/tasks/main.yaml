@@ -28,3 +28,9 @@
 
     - name: Run dphys-swapfile uninstall
       ansible.builtin.command: dphys-swapfile uninstall
+
+    - name: Disable and stop dphys-swapfile service
+      ansible.builtin.service:
+        name: dphys-swapfile
+        enabled: false
+        state: stopped
