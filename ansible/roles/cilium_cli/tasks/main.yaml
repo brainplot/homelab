@@ -1,0 +1,28 @@
+- name: Download Cilium CLI
+  ansible.builtin.get_url:
+    url: https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-arm64.tar.gz
+    checksum: sha256:https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-arm64.tar.gz.sha256sum
+    dest: /tmp/cilium.tar.gz
+    mode: '0644'
+  register: cilium_tar_gz
+
+- name: Install Cilium CLI
+  become: true
+  ansible.builtin.unarchive:
+    dest: /usr/local/bin
+    src: '{{ cilium_tar_gz.dest }}'
+    remote_src: true
+
+- name: Add Cilium completion for Bash
+  become: true
+  become_user: admin
+  ansible.builtin.lineinfile:
+    path: ~/.bash_completion
+    create: true
+    mode: '0644'
+    line: . <(cilium completion bash)
+
+- name: Remove Cilium CLI archive
+  ansible.builtin.file:
+    path: '{{ cilium_tar_gz.dest }}'
+    state: absent

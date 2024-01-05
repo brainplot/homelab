@@ -8,3 +8,5 @@
     - kubernetes_control_plane
     - kubeconfig
     - helm
+    - cilium
+    - cilium_cli

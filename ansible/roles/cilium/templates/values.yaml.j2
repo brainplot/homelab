@@ -1,0 +1,11 @@
+{# vim: set filetype=yaml ts=2 sw=0 expandtab: #}
+hubble:
+  enabled: false
+
+ipam:
+  # -- Configure IP Address Management mode.
+  # ref: https://docs.cilium.io/en/stable/network/concepts/ipam/
+  mode: kubernetes
+
+operator:
+  replicas: {{ cilium_operator_replicas | default(replicas) }}
