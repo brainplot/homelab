@@ -33,7 +33,6 @@
 - vars:
     kubeadm_discovery_token_ca_cert_hash: 'sha256:{{ kubernetes_ca.public_key_fingerprints.sha256 | replace(":", "") }}'
   become: true
-  become_user: admin
   block:
     - name: Init first control plane node
       ansible.builtin.command:
