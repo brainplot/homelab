@@ -25,11 +25,6 @@
     path: /etc/kubernetes/pki/ca.crt
   register: kubernetes_ca
 
-- name: Install python3-cryptography
-  become: true
-  ansible.builtin.package:
-    name: python3-cryptography
-
 - name: Retrieve Kubernetes CA info
   community.crypto.x509_certificate_info:
     content: '{{ kubernetes_ca.content | b64decode }}'

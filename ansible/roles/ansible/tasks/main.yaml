@@ -5,6 +5,7 @@
         name:
           - acl
           - python3-yaml
+          - python3-cryptography
           - git
 
     - name: Create /etc/ansible directory
