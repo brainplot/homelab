@@ -62,3 +62,24 @@
     net.bridge.bridge-nf-call-ip6tables: 1
     net.ipv4.ip_forward: 1
   notify: Restart containerd
+
+- name: Configure kubectl
+  become: true
+  become_user: admin
+  block:
+    - name: Add kubectl completion for bash
+      ansible.builtin.lineinfile:
+        path: ~/.bash_completion
+        create: true
+        mode: '0644'
+        line: '{{ item }}'
+      with_items:
+        - . <(kubectl completion bash)
+        - complete -o default -F __start_kubectl k
+
+    - name: Add k alias
+      ansible.builtin.lineinfile:
+        path: ~/.bash_aliases
+        create: true
+        mode: '0644'
+        line: alias k=kubectl
