@@ -1,0 +1,38 @@
+{# vim: set filetype=yaml ts=2 sw=0 expandtab: #}
+{% set token = kubeadm_bootstrap_token_id ~ "." ~ kubeadm_bootstrap_token_secret %}
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+networking:
+  podSubnet: {{ kubernetes_pod_subnet }}
+# controlPlaneEndpoint: {{ kubernetes_control_plane_endpoint }}
+clusterName: {{ kubernetes_cluster_name }}
+apiServer:
+  certSANs:
+    - {{ kubernetes_control_plane_endpoint }}
+    - {{ kubernetes_control_plane_endpoint ~ "." ~ domain }}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+bootstrapTokens:
+  - token: {{ token }}
+    ttl: 1h
+localAPIEndpoint:
+  bindPort: {{ kubernetes_control_plane_port | default(6443) }}
+certificateKey: {{ kubeadm_certificate_key }}
+nodeRegistration:
+  criSocket: {{ cri_socket }}
+{% if kubernetes_control_plane_taints is defined %}
+  taints: {{ kubernetes_control_plane_taints | to_yaml }}
+{%- endif %}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  timeout: 30s
+  bootstrapToken:
+    token: {{ token }}
+    apiServerEndpoint: {{ kubernetes_control_plane_endpoint }}
+    caCertHashes:
+      - {{ kubeadm_discovery_token_ca_cert_hash }}
+controlPlane:
+  certificateKey: {{ kubeadm_certificate_key }}

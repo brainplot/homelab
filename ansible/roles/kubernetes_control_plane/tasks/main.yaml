@@ -1,0 +1,59 @@
+- name: Create Kubernetes PKI directories
+  become: true
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/etcd
+    recurse: true
+    state: directory
+
+- name: Copy Kubernetes intermediate CAs
+  become: true
+  ansible.builtin.copy:
+    src: pki/{{ item.src }}
+    dest: /etc/kubernetes/pki/{{ item.dest }}
+    force: true
+  with_items:
+    - { src: kubernetes-ca.crt, dest: ca.crt }
+    - { src: kubernetes-ca.key, dest: ca.key }
+    - { src: etcd-ca.crt, dest: etcd/ca.crt }
+    - { src: etcd-ca.key, dest: etcd/ca.key }
+    - { src: kubernetes-front-proxy-ca.crt, dest: front-proxy-ca.crt }
+    - { src: kubernetes-front-proxy-ca.key, dest: front-proxy-ca.key }
+
+- name: Read Kubernetes CA
+  become: true
+  ansible.builtin.slurp:
+    path: /etc/kubernetes/pki/ca.crt
+  register: kubernetes_ca
+
+- name: Install python3-cryptography
+  become: true
+  ansible.builtin.package:
+    name: python3-cryptography
+
+- name: Retrieve Kubernetes CA info
+  community.crypto.x509_certificate_info:
+    content: '{{ kubernetes_ca.content | b64decode }}'
+  register: kubernetes_ca
+
+- vars:
+    kubeadm_discovery_token_ca_cert_hash: 'sha256:{{ kubernetes_ca.public_key_fingerprints.sha256 | replace(":", "") }}'
+  become: true
+  become_user: admin
+  block:
+    - name: Init first control plane node
+      ansible.builtin.command:
+        cmd: kubeadm init --upload-certs --config /dev/stdin
+        creates: /etc/kubernetes/kubelet.conf
+        stdin: '{{ lookup("template", "kubeadm.yaml.j2") }}'
+      when: inventory_hostname == ansible_play_hosts_all[0]
+
+    - name: Join control plane
+      ansible.builtin.command:
+        cmd: kubeadm join --config /dev/stdin
+        creates: /etc/kubernetes/kubelet.conf
+        stdin: '{{ lookup("template", "kubeadm.yaml.j2") }}'
+      register: join_control_plane
+      when: inventory_hostname != ansible_play_hosts_all[0]
+      retries: 3
+      delay: 3
+      until: join_control_plane is not failed

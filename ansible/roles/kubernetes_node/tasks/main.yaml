@@ -1,0 +1,64 @@
+- become: true
+  block:
+    - name: Create /etc/apt/keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+      register: keyrings_dir
+
+    - name: Set Kubernetes package repositories
+      become: false
+      ansible.builtin.set_fact:
+        kubernetes_repo: https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb
+
+    - name: Download public key of Kubernetes package repositories
+      ansible.builtin.get_url:
+        url: '{{ kubernetes_repo }}/Release.key'
+        dest: '{{ keyrings_dir.path }}/kubernetes-apt-keyring.asc'
+        mode: '0644'
+      register: kubernetes_public_key
+
+    - name: Add Kubernetes package repositories
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by={{ kubernetes_public_key.dest }}] {{ kubernetes_repo }} /
+        filename: kubernetes
+        state: present
+
+    - name: Install kubeadm,kubelet,kubectl
+      ansible.builtin.package:
+        name: [kubeadm,kubelet,kubectl]
+        state: present
+
+- name: Copy crictl config
+  become: true
+  ansible.builtin.template:
+    src: crictl.yaml.j2
+    dest: /etc/crictl.yaml
+
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#install-and-configure-prerequisites
+- name: Forward IPv4 and let iptables see bridged traffic (1)
+  become: true
+  ansible.builtin.copy:
+    force: true
+    dest: /etc/modules-load.d/99-kubernetes.conf
+    content: |
+      overlay
+      br_netfilter
+
+- name: Reload kernel modules
+  become: true
+  ansible.builtin.command: modprobe --all overlay br_netfilter
+
+- name: Forward IPv4 and let iptables see bridged traffic (2)
+  become: true
+  ansible.builtin.sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    sysctl_file: /etc/sysctl.d/99-zzz-kubernetes.conf
+    reload: true
+    state: present
+  with_dict:
+    net.bridge.bridge-nf-call-iptables: 1
+    net.bridge.bridge-nf-call-ip6tables: 1
+    net.ipv4.ip_forward: 1
+  notify: Restart containerd

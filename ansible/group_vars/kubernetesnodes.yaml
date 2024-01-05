@@ -1,0 +1,9 @@
+kubernetes_version: 1.28
+cri_socket: unix:///run/containerd/containerd.sock
+kubeadm_bootstrap_token_id: r34e40
+kubeadm_bootstrap_token_secret: 47e2yrog8r4cuisa
+kubeadm_certificate_key: 3f859ca3f1e48ff8e8b3bd565c861425751d51551af0de337894ffb5b40414f3
+kubernetes_cluster_name: home
+kubernetes_control_plane_endpoint: k8s
+kubernetes_pod_subnet: 10.44.0.0/16
+kubernetes_control_plane_taints: []

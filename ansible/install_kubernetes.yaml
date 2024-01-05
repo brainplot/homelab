@@ -1,0 +1,8 @@
+- name: Install container runtime
+  hosts: kubernetesnodes
+  roles: [containerd]
+
+- name: Bootstrap cluster
+  hosts: kubernetescontrolplane
+  roles:
+    - kubernetes_control_plane
