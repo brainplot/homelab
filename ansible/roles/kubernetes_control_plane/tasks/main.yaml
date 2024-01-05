@@ -18,6 +18,7 @@
         type: ECC
         curve: secp256r1
         format_mismatch: convert
+        mode: '0600'
         state: present
       with_items: '{{ certificate_authorities }}'
       when: inventory_hostname == ansible_play_hosts_all[0]
@@ -43,6 +44,7 @@
         privatekey_path: /etc/kubernetes/pki/{{ item.item.key }}
         csr_content: '{{ item.csr }}'
         provider: selfsigned
+        mode: '0600'
         state: present
       with_items: '{{ ca_csr.results }}'
       when: inventory_hostname == ansible_play_hosts_all[0]
