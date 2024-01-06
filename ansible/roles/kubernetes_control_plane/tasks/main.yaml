@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: /etc/kubernetes/pki/etcd
     recurse: true
+    mode: '0700'
     state: directory
 
 - become: true
