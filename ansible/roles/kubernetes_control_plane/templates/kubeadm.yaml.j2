@@ -10,6 +10,22 @@ apiServer:
   certSANs:
     - {{ kubernetes_control_plane_endpoint }}
     - {{ kubernetes_control_plane_endpoint ~ "." ~ domain }}
+  extraArgs:
+    audit-log-path: /var/log/audit.log
+    audit-log-maxage: '30'
+    audit-log-maxbackup: '10'
+    audit-log-maxsize: '100'
+    audit-policy-file: /etc/kubernetes/audit-policy.yaml
+  extraVolumes:
+    - name: audit-log
+      hostPath: {{ kubernetes_log_file }}
+      mountPath: /var/log/audit.log
+      pathType: FileOrCreate
+    - name: audit
+      hostPath: /etc/kubernetes/audit-policy.yaml
+      mountPath: /etc/kubernetes/audit-policy.yaml
+      pathType: File
+      readOnly: true
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration

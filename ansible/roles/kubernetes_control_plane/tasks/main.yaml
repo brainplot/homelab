@@ -1,10 +1,32 @@
-- name: Create Kubernetes PKI directories
+- name: Create Kubernetes directories
   become: true
   ansible.builtin.file:
     path: /etc/kubernetes/pki/etcd
     recurse: true
     mode: '0700'
     state: directory
+
+- name: Create /var/log/kubernetes directory
+  become: true
+  ansible.builtin.file:
+    path: /var/log/kubernetes
+    state: directory
+  register: kubernetes_log
+
+- name: Create {{ kubernetes_log.path }}/audit.log file
+  become: true
+  ansible.builtin.file:
+    path: '{{ kubernetes_log.path }}/audit.log'
+    mode: '0600'
+    state: touch
+  register: kubernetes_log
+
+- name: Copy audit-policy.yaml
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/kubernetes/audit-policy.yaml
+    src: audit-policy.yaml
+    mode: '0644'
 
 - become: true
   vars:
@@ -57,6 +79,7 @@
   register: kubernetes_ca
 
 - vars:
+    kubernetes_log_file: '{{ kubernetes_log.dest }}'
     kubeadm_discovery_token_ca_cert_hash: 'sha256:{{ kubernetes_ca.public_key_fingerprints.sha256 | replace(":", "") }}'
   become: true
   block:
