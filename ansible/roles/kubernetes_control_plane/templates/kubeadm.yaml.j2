@@ -17,6 +17,7 @@ apiServer:
     audit-log-maxsize: '100'
     audit-policy-file: /etc/kubernetes/audit-policy.yaml
     profiling: 'false'
+    enable-admission-plugins: DenyServiceExternalIPs,NodeRestriction
   extraVolumes:
     - name: audit-log
       hostPath: {{ kubernetes_log_file }}
