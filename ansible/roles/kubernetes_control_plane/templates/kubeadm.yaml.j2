@@ -20,6 +20,7 @@ apiServer:
     enable-admission-plugins: DenyServiceExternalIPs,NodeRestriction
     encryption-provider-config: /etc/kubernetes/enc/enc.yaml
     request_timeout: {{ kubernetes_request_timeout }}
+    tls-cipher-suites: '{{ kubernetes_tls_cipher_suites | join(",") }}'
   extraVolumes:
     - name: audit-log
       hostPath: {{ kubernetes_log_file }}
