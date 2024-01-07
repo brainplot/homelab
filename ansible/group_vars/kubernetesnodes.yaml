@@ -1,4 +1,4 @@
-kubernetes_version: 1.28
+kubernetes_version: 1.26
 cri_socket: unix:///run/containerd/containerd.sock
 kubernetes_cluster_name: home
 kubernetes_control_plane_endpoint: k8s
