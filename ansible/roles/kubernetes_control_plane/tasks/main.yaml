@@ -1,10 +1,13 @@
 - name: Create Kubernetes directories
   become: true
   ansible.builtin.file:
-    path: /etc/kubernetes/pki/etcd
+    path: '{{ item }}'
     recurse: true
     mode: '0700'
     state: directory
+  with_items:
+    - /etc/kubernetes/pki/etcd
+    - /etc/kubernetes/enc
 
 - name: Create /var/log/kubernetes directory
   become: true
@@ -27,6 +30,14 @@
     dest: /etc/kubernetes/audit-policy.yaml
     src: audit-policy.yaml
     mode: '0644'
+
+- name: Render encryption configuration
+  become: true
+  ansible.builtin.template:
+    dest: /etc/kubernetes/enc/enc.yaml
+    src: enc.yaml.j2
+    mode: '0600'
+    force: true
 
 - become: true
   vars:
