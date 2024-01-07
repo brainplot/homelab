@@ -36,6 +36,9 @@ apiServer:
       mountPath: /etc/kubernetes/enc
       pathType: Directory
       readOnly: true
+controllerManager:
+  extraArgs:
+    terminated-pod-gc-threshold: '10'
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
