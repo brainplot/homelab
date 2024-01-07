@@ -1,0 +1,42 @@
+- name: Secure Kubernetes node
+  become: true
+  hosts: kubernetesnodes
+  tasks:
+    - name: Find Container Network Interface files
+      ansible.builtin.find:
+        path: /etc/cni/net.d
+        recurse: true
+        follow: true
+        hidden: true
+      register: cni_files
+
+    - name: Ensure Container Network Interface file permissions are set to 600
+      ansible.builtin.file:
+        path: '{{ item }}'
+        mode: '0600'
+        owner: root
+        group: root
+      with_items: '{{ cni_files.files | map(attribute="path") }}'
+
+    - name: Find Kubernetes PKI certificate files
+      ansible.builtin.find:
+        path: /etc/kubernetes/pki
+        recurse: true
+        pattern: '*.crt'
+      register: crt_files
+
+    - name: Ensure that the Kubernetes PKI certificate files permissions are set to 600
+      ansible.builtin.file:
+        path: '{{ item }}'
+        mode: '0600'
+      with_items: '{{ crt_files.files | map(attribute="path") }}'
+
+    - name: Ensure that the kubelet service file permissions are set to 600
+      ansible.builtin.file:
+        path: '{{ kubelet_service }}'
+        mode: '0600'
+
+    - name: Ensure kubelet config.yaml configuration file permissions set to 600
+      ansible.builtin.file:
+        path: '{{ kubelet_config }}'
+        mode: '0600'
