@@ -19,6 +19,7 @@ apiServer:
     profiling: 'false'
     enable-admission-plugins: DenyServiceExternalIPs,NodeRestriction
     encryption-provider-config: /etc/kubernetes/enc/enc.yaml
+    request_timeout: {{ kubernetes_request_timeout }}
   extraVolumes:
     - name: audit-log
       hostPath: {{ kubernetes_log_file }}

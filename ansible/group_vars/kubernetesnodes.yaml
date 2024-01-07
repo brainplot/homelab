@@ -4,4 +4,5 @@ kubernetes_cluster_name: home
 kubernetes_control_plane_endpoint: k8s
 kubernetes_pod_subnet: 10.44.0.0/16
 kubernetes_control_plane_taints: []
+kubernetes_request_timeout: 15s
 replicas: 1
