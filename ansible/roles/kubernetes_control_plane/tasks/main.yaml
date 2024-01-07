@@ -121,3 +121,7 @@
     namespace: kube-system
     replicas: '{{ coredns_replicas | default(replicas) }}'
     kubeconfig: /etc/kubernetes/admin.conf
+  register: scale_coredns
+  retries: 3
+  delay: 3
+  until: scale_coredns is not failed
