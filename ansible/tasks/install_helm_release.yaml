@@ -1,0 +1,24 @@
+- name: Add {{ repo_name | default(release_name) }} helm repo
+  kubernetes.core.helm_repository:
+    name: '{{ repo_name | default(release_name) }}'
+    repo_url: '{{ repo_url }}'
+
+- name: Get {{ release_name }} release
+  kubernetes.core.helm_info:
+    name: '{{ release_name }}'
+    release_namespace: '{{ release_namespace }}'
+  register: helm_release
+
+- name: Install {{ release_name }}
+  kubernetes.core.helm:
+    name: '{{ release_name }}'
+    chart_ref: '{{ repo_name | default(release_name) }}/{{ chart_name | default(release_name) }}'
+    release_namespace: '{{ release_namespace }}'
+    create_namespace: '{{ create_namespace | default(true) }}'
+    wait: true
+    update_repo_cache: true
+    values: '{{ values }}'
+  when: >-
+    helm_release.status is not defined
+    or helm_release.status.status != 'DEPLOYED'
+    or (force_release | default(false))
