@@ -11,3 +11,8 @@ operator:
   replicas: {{ cilium_operator_replicas | default(replicas) }}
 
 policyCIDRMatchMode: nodes
+
+# https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing
+routingMode: native
+autoDirectNodeRoutes: true
+ipv4NativeRoutingCIDR: {{ kubernetes_pod_subnet }}
