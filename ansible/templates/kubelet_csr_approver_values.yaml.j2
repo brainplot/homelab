@@ -1,0 +1,8 @@
+providerIpPrefixes: {{ (ansible_default_ipv4.address + '/' + ansible_default_ipv4.netmask) | ipaddr('network/prefix') }}
+maxExpirationSeconds: 86400
+
+metrics:
+  enabled: false
+
+leaderElection: false
+replicas: {{ kubelet_csr_approver_replicas | default(replicas) }}

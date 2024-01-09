@@ -10,13 +10,23 @@
     - helm
     - cilium_cli
   tasks:
-    - name: Install cilium
-      become: true
+    - become: true
       become_user: admin
-      ansible.builtin.import_tasks: tasks/install_helm_release.yaml
-      vars:
-        release_name: cilium
-        release_namespace: kube-system
-        repo_url: https://helm.cilium.io/
-        create_namespace: false
-        values: '{{ lookup("template", "cilium_values.yaml.j2") | from_yaml }}'
+      block:
+        - name: Install cilium
+          ansible.builtin.import_tasks: tasks/install_helm_release.yaml
+          vars:
+            release_name: cilium
+            release_namespace: kube-system
+            repo_url: https://helm.cilium.io/
+            create_namespace: false
+            values: '{{ lookup("template", "cilium_values.yaml.j2") | from_yaml }}'
+
+        - name: Install kubelet-csr-approver
+          ansible.builtin.import_tasks: tasks/install_helm_release.yaml
+          vars:
+            release_name: kubelet-csr-approver
+            release_namespace: kube-system
+            repo_url: https://postfinance.github.io/kubelet-csr-approver/
+            create_namespace: false
+            values: '{{ lookup("template", "kubelet_csr_approver_values.yaml.j2") | from_yaml }}'
