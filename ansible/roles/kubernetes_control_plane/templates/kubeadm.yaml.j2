@@ -21,6 +21,7 @@ apiServer:
     encryption-provider-config: /etc/kubernetes/enc/enc.yaml
     request_timeout: {{ kubernetes_request_timeout }}
     tls-cipher-suites: '{{ kubernetes_tls_cipher_suites | join(",") }}'
+    kubelet-certificate-authority: /etc/kubernetes/pki/ca.crt
   extraVolumes:
     - name: audit-log
       hostPath: {{ kubernetes_log_file }}
@@ -72,5 +73,6 @@ controlPlane:
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
+serverTLSBootstrap: true
 tlsMinVersion: VersionTLS12
 tlsCipherSuites: {{ kubernetes_tls_cipher_suites | to_yaml }}
