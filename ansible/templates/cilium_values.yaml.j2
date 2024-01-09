@@ -9,3 +9,5 @@ ipam:
 
 operator:
   replicas: {{ cilium_operator_replicas | default(replicas) }}
+
+policyCIDRMatchMode: nodes
