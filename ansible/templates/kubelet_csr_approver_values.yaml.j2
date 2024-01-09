@@ -1,4 +1,5 @@
 providerIpPrefixes: {{ (ansible_default_ipv4.address + '/' + ansible_default_ipv4.netmask) | ipaddr('network/prefix') }}
+ignoreNonSystemNode: true
 maxExpirationSeconds: 86400
 
 metrics:
