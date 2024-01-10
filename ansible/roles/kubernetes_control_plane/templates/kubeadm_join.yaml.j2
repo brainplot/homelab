@@ -1,0 +1,13 @@
+{# vim: set filetype=yaml ts=2 sw=0 expandtab: #}
+{% set token = kubeadm_bootstrap_token_id ~ "." ~ kubeadm_bootstrap_token_secret %}
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  timeout: 30s
+  bootstrapToken:
+    token: {{ token }}
+    apiServerEndpoint: {{ kubernetes_control_plane_endpoint }}
+    caCertHashes:
+      - {{ kubeadm_discovery_token_ca_cert_hash }}
+controlPlane:
+  certificateKey: {{ kubeadm_certificate_key }}
