@@ -1,5 +1,6 @@
 {# vim: set filetype=yaml ts=2 sw=0 expandtab: #}
 {% set token = kubeadm_bootstrap_token_id ~ "." ~ kubeadm_bootstrap_token_secret %}
+{% set tls_cipher_suites = kubernetes_tls_cipher_suites | join(',') %}
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 networking:
@@ -20,7 +21,7 @@ apiServer:
     enable-admission-plugins: DenyServiceExternalIPs,NodeRestriction
     encryption-provider-config: /etc/kubernetes/encryption-configuration.yaml
     request-timeout: {{ kubernetes_request_timeout }}
-    tls-cipher-suites: '{{ kubernetes_tls_cipher_suites | join(",") }}'
+    tls-cipher-suites: {{ tls_cipher_suites }}
     kubelet-certificate-authority: /etc/kubernetes/pki/ca.crt
   extraVolumes:
     - name: audit-log
@@ -44,6 +45,10 @@ controllerManager:
 scheduler:
   extraArgs:
     profiling: 'false'
+etcd:
+  local:
+    extraArgs:
+      cipher-suites: {{ tls_cipher_suites }}
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
