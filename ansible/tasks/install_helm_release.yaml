@@ -6,14 +6,14 @@
 - name: Get {{ release_name }} release
   kubernetes.core.helm_info:
     name: '{{ release_name }}'
-    release_namespace: '{{ release_namespace }}'
+    release_namespace: '{{ release_namespace | default(release_name)}}'
   register: helm_release
 
 - name: Install {{ release_name }}
   kubernetes.core.helm:
     name: '{{ release_name }}'
     chart_ref: '{{ repo_name | default(release_name) }}/{{ chart_name | default(release_name) }}'
-    release_namespace: '{{ release_namespace }}'
+    release_namespace: '{{ release_namespace | default(release_name) }}'
     create_namespace: '{{ create_namespace | default(true) }}'
     wait: true
     update_repo_cache: true
