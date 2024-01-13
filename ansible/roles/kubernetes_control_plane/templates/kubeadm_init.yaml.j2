@@ -64,7 +64,6 @@ nodeRegistration:
   taints: {{ kubernetes_control_plane_taints | to_yaml }}
 {%- endif %}
 skipPhases:
-  - certs
   - show-join-command
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1

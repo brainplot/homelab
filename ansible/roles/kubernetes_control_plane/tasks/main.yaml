@@ -1,10 +1,3 @@
-- name: Create /var/cache/kubeadm directory
-  become: true
-  ansible.builtin.file:
-    path: /var/cache/kubeadm
-    state: directory
-  register: kubeadm_cache
-
 - name: Create /var/log/kubernetes directory
   become: true
   ansible.builtin.file:
@@ -20,20 +13,11 @@
     state: touch
   register: kubernetes_log
 
-- name: Copy kubeadm-init.conf
+- name: Create /etc/kubernetes directory
   become: true
-  ansible.builtin.template:
-    dest: '{{ kubeadm_cache.path }}/kubeadm-init.conf'
-    src: kubeadm_init.yaml.j2
-    mode: '0600'
-    force: true
-  register: kubeadm_init_conf
-  vars:
-    kubernetes_log_file: '{{ kubernetes_log.dest }}'
-
-- name: Generate Kubernetes certificates
-  become: true
-  ansible.builtin.command: kubeadm init phase certs all --config {{ kubeadm_init_conf.dest | quote }}
+  ansible.builtin.file:
+    path: /etc/kubernetes
+    state: directory
 
 - name: Copy audit-policy.yaml
   become: true
@@ -50,40 +34,35 @@
     mode: '0600'
     force: true
 
+- name: Init first control plane node
+  become: true
+  ansible.builtin.command:
+    cmd: kubeadm init --upload-certs --config /dev/stdin
+    creates: /etc/kubernetes/kubelet.conf
+    stdin: '{{ lookup("template", "kubeadm_init.yaml.j2") }}'
+  when: inventory_hostname == ansible_play_hosts_all[0]
+  vars:
+    kubernetes_log_file: '{{ kubernetes_log.dest }}'
+
 - name: Get information on Kubernetes CA
   become: true
   community.crypto.x509_certificate_info:
     path: /etc/kubernetes/pki/ca.crt
   register: kubernetes_ca
 
-- name: Copy kubeadm-join.conf
-  become: true
-  ansible.builtin.template:
-    dest: '{{ kubeadm_cache.path }}/kubeadm-join.conf'
-    src: kubeadm_join.yaml.j2
-    mode: '0600'
-    force: true
-  register: kubeadm_join_conf
-  vars:
-    kubeadm_discovery_token_ca_cert_hash: 'sha256:{{ kubernetes_ca.public_key_fingerprints.sha256 | replace(":", "") }}'
-
-- name: Init first control plane node
-  become: true
-  ansible.builtin.command:
-    cmd: kubeadm init --upload-certs --config {{ kubeadm_init_conf.dest | quote }}
-    creates: /etc/kubernetes/kubelet.conf
-  when: inventory_hostname == ansible_play_hosts_all[0]
-
 - name: Join control plane
   become: true
   ansible.builtin.command:
-    cmd: kubeadm join --config {{ kubeadm_join_conf.dest | quote }}
+    cmd: kubeadm join --config /dev/stdin
     creates: /etc/kubernetes/kubelet.conf
+    stdin: '{{ lookup("template", "kubeadm_join.yaml.j2") }}'
   register: join_control_plane
   when: inventory_hostname != ansible_play_hosts_all[0]
   retries: 3
   delay: 3
   until: join_control_plane is not failed
+  vars:
+    kubeadm_discovery_token_ca_cert_hash: 'sha256:{{ kubernetes_ca.public_key_fingerprints.sha256 | replace(":", "") }}'
 
 - name: Scale coredns deployment
   become: true
