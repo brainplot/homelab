@@ -30,3 +30,38 @@
             repo_url: https://postfinance.github.io/kubelet-csr-approver/
             create_namespace: false
             values: '{{ lookup("template", "kubelet_csr_approver_values.yaml.j2") | from_yaml }}'
+
+        - name: Install cert-manager
+          ansible.builtin.import_tasks: tasks/install_helm_release.yaml
+          vars:
+            repo_name: jetstack
+            repo_url: https://charts.jetstack.io/
+            release_name: cert-manager
+            values:
+              installCRDs: true
+
+        - name: Install root CA
+          kubernetes.core.k8s:
+            state: present
+            definition:
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: brainplot-ca
+                namespace: cert-manager
+              type: kubernetes.io/tls
+              stringData:
+                tls.crt: '{{ lookup("file", "ca.crt") }}'
+                tls.key: '{{ lookup("file", "ca.key") }}'
+
+        - name: Define root CA as a ClusterIssuer
+          kubernetes.core.k8s:
+            state: present
+            definition:
+              apiVersion: cert-manager.io/v1
+              kind: ClusterIssuer
+              metadata:
+                name: brainplot
+              spec:
+                ca:
+                  secretName: brainplot-ca
