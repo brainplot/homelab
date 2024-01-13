@@ -1,0 +1,11 @@
+- become: true
+  block:
+    - name: Copy root certificate
+      ansible.builtin.copy:
+        dest: /usr/local/share/ca-certificates/home.crt
+        src: ca.crt
+        mode: '0644'
+        force: true
+
+    - name: Run update-ca-certificates
+      ansible.builtin.command: update-ca-certificates
