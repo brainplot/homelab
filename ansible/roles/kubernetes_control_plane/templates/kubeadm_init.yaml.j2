@@ -19,7 +19,7 @@ apiServer:
     profiling: 'false'
     enable-admission-plugins: DenyServiceExternalIPs,NodeRestriction
     encryption-provider-config: /etc/kubernetes/encryption-configuration.yaml
-    request_timeout: {{ kubernetes_request_timeout }}
+    request-timeout: {{ kubernetes_request_timeout }}
     tls-cipher-suites: '{{ kubernetes_tls_cipher_suites | join(",") }}'
     kubelet-certificate-authority: /etc/kubernetes/pki/ca.crt
   extraVolumes:
