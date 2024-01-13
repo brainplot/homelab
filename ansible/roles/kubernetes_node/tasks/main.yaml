@@ -18,6 +18,11 @@
         mode: '0644'
       register: kubernetes_public_key
 
+    - name: Remove Kubernetes package repositories
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/kubernetes.list
+        state: absent
+
     - name: Add Kubernetes package repositories
       ansible.builtin.apt_repository:
         repo: deb [signed-by={{ kubernetes_public_key.dest }}] {{ kubernetes_repo }} /
@@ -27,7 +32,7 @@
     - name: Install kubeadm,kubelet,kubectl
       ansible.builtin.package:
         name: [kubeadm,kubelet,kubectl]
-        state: present
+        state: latest
 
 - name: Copy crictl config
   become: true
