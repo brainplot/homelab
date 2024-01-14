@@ -9,3 +9,8 @@ kubernetescontrolplane:
 kubernetesnodes:
   hosts:
     ares: ~
+
+all:
+  hosts:
+    loadbalancer:
+      ansible_host: ares
