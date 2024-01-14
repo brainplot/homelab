@@ -9,6 +9,11 @@
     - kubeconfig
     - helm
     - cilium_cli
+  pre_tasks:
+    - name: Gather facts from loadbalancer
+      ansible.builtin.setup: ~
+      delegate_facts: true
+      delegate_to: loadbalancer
   tasks:
     - become: true
       become_user: admin
