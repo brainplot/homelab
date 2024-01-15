@@ -5,7 +5,7 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 networking:
   podSubnet: {{ kubernetes_pod_subnet }}
-# controlPlaneEndpoint: {{ kubernetes_control_plane_endpoint }}
+controlPlaneEndpoint: {{ kubernetes_control_plane_endpoint }}
 clusterName: {{ kubernetes_cluster_name }}
 apiServer:
   certSANs:

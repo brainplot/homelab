@@ -14,6 +14,13 @@
       ansible.builtin.setup: ~
       delegate_facts: true
       delegate_to: loadbalancer
+
+    - name: Resolve k8s to localhost
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: 127.0.0.1          {{ kubernetes_control_plane_endpoint }}
+        state: present
   tasks:
     - become: true
       become_user: admin

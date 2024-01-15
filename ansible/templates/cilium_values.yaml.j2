@@ -19,5 +19,5 @@ ipv4NativeRoutingCIDR: {{ kubernetes_pod_subnet }}
 
 # https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#kubernetes-without-kube-proxy
 kubeProxyReplacement: true
-k8sServiceHost: {{ hostvars['loadbalancer'].ansible_default_ipv4.address }}
+k8sServiceHost: {{ kubernetes_control_plane_endpoint }}
 k8sServicePort: 6443
