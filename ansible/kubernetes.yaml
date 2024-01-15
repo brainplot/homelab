@@ -34,6 +34,18 @@
             create_namespace: false
             values: '{{ lookup("template", "cilium_values.yaml.j2") | from_yaml }}'
 
+        - name: Apply CiliumLoadBalancerIPPool
+          kubernetes.core.k8s:
+            state: present
+            definition:
+              apiVersion: cilium.io/v2alpha1
+              kind: CiliumLoadBalancerIPPool
+              metadata:
+                name: home-pool
+              spec:
+                cidrs:
+                - cidr: 100.64.0.0/16
+
         - name: Install kubelet-csr-approver
           ansible.builtin.import_tasks: tasks/install_helm_release.yaml
           vars:
