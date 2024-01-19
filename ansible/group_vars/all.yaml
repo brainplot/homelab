@@ -3,4 +3,4 @@ ntp_server: time.cloudflare.com
 editor: vim
 lang: en_US.UTF-8
 language: en_US
-domain: home.arpa
+domain: fritz.box
