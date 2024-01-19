@@ -10,11 +10,6 @@
     - helm
     - cilium_cli
   pre_tasks:
-    - name: Gather facts from loadbalancer
-      ansible.builtin.setup: ~
-      delegate_facts: true
-      delegate_to: loadbalancer
-
     - name: Resolve k8s to localhost
       become: true
       ansible.builtin.lineinfile:
