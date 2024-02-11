@@ -20,5 +20,5 @@
     values: '{{ values }}'
   when: >-
     helm_release.status is not defined
-    or helm_release.status.status != 'DEPLOYED'
+    or helm_release.status.status != 'deployed'
     or (force_release | default(false))
