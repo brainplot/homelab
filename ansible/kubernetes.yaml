@@ -41,6 +41,13 @@
                 cidrs:
                 - cidr: 100.64.0.0/16
 
+        - name: Install ingress-nginx
+          ansible.builtin.import_tasks: tasks/install_helm_release.yaml
+          vars:
+            release_name: ingress-nginx
+            repo_url: https://kubernetes.github.io/ingress-nginx/
+            values: '{{ lookup("template", "ingress_nginx_values.yaml.j2") | from_yaml }}'
+
         - name: Install kubelet-csr-approver
           ansible.builtin.import_tasks: tasks/install_helm_release.yaml
           vars:

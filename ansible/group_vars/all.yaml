@@ -4,3 +4,5 @@ editor: vim
 lang: en_US.UTF-8
 language: en_US
 domain: fritz.box
+
+ingress_nginx_external_ip: 100.64.0.2

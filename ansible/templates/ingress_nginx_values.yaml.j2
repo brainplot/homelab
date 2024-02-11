@@ -1,0 +1,8 @@
+# vim: set filetype=yaml ts=2 sw=0 expandtab:
+controller:
+  ingressClassResource:
+    default: true
+  service:
+    annotations:
+      # https://docs.cilium.io/en/stable/network/lb-ipam/#requesting-ips
+      io.cilium/lb-ipam-ips: {{ ingress_nginx_external_ip }}
