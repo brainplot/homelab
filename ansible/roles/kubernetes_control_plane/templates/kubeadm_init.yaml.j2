@@ -70,5 +70,7 @@ skipPhases:
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 serverTLSBootstrap: true
+shutdownGracePeriod: 120s
+shutdownGracePeriodCriticalPods: 60s
 tlsMinVersion: VersionTLS12
 tlsCipherSuites: {{ kubernetes_tls_cipher_suites | to_yaml }}
