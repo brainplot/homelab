@@ -49,6 +49,7 @@ etcd:
   local:
     extraArgs:
       cipher-suites: {{ tls_cipher_suites }}
+      tls-min-version: TLS1.2
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
