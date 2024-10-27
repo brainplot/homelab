@@ -17,5 +17,8 @@
         - C.UTF-8
         - '{{ lang }}'
 
+    - name: Generate locales
+      ansible.builtin.command: locale-gen
+
     - name: Run update-locale --reset LANG={{ lang }} LANGUAGE={{ language }}
       ansible.builtin.command: update-locale --reset LANG={{ lang | quote }} LANGUAGE={{ language | quote }}
