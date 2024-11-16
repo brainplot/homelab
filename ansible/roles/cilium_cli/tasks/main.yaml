@@ -14,8 +14,6 @@
     remote_src: true
 
 - name: Add Cilium completion for Bash
-  become: true
-  become_user: admin
   ansible.builtin.lineinfile:
     path: ~/.bash_completion
     create: true

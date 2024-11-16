@@ -12,5 +12,5 @@
       ansible.builtin.file:
         path: /etc/ansible
         mode: '2755'
-        owner: ansible
+        owner: admin
         state: directory

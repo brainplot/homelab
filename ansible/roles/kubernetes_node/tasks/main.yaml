@@ -69,8 +69,6 @@
   notify: Restart containerd
 
 - name: Configure kubectl
-  become: true
-  become_user: admin
   block:
     - name: Add kubectl completion for bash
       ansible.builtin.lineinfile:

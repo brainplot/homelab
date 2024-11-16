@@ -17,9 +17,7 @@
         line: 127.0.0.1          {{ kubernetes_control_plane_endpoint }}
         state: present
   tasks:
-    - become: true
-      become_user: admin
-      block:
+    - block:
         - name: Install cilium
           ansible.builtin.import_tasks: tasks/install_helm_release.yaml
           vars:

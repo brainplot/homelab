@@ -22,16 +22,12 @@
         state: latest
 
 - name: Install helm plugins
-  become: true
-  become_user: admin
   kubernetes.core.helm_plugin:
     plugin_path: '{{ item }}'
   with_items:
     - https://github.com/databus23/helm-diff
 
 - name: Add helm completion for bash
-  become: true
-  become_user: admin
   ansible.builtin.lineinfile:
     path: ~/.bash_completion
     create: true
