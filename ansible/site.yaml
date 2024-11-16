@@ -5,12 +5,12 @@
 - name: Set up common things
   hosts: all
   roles:
+    - locale
     - etchosts
     - pki
     - ntp
     - vim
     - editor
-    - locale
     - tmux
 
 - name: Configure Raspberry Pis
