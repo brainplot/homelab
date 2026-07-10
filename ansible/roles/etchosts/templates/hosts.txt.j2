@@ -8,4 +8,4 @@
 {{ fmt.format('ff02::1', 'ip6-allnodes') }}
 {{ fmt.format('ff02::2', 'ip6-allrouters') }}
 
-{{ fmt.format('127.0.0.1', ansible_hostname) }}
+{{ fmt.format('127.0.0.1', ansible_facts['hostname']) }}
