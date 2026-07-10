@@ -23,12 +23,15 @@ set viminfo=
 set wildignore+=.pyc,.swp
 set wildmenu
 
-fun! TrimWhitespace()
-  let l:save = winsaveview()
-  keeppatterns keepjumps %s/\s\+$//e
-  keeppatterns keepjumps %s#\($\n\s*\)\+\%$##e
-  call winrestview(l:save)
-endfun
+" Remove trailing whitespaces from end of line and end of file
+function! TrimWhitespace()
+	let l:saved_view = winsaveview()
+	" Remove trailing whitespace on each line
+	keeppatterns keepjumps %substitute/\s\+$//e
+	" Remove blank lines at end of file
+	keeppatterns keepjumps %substitute/\(\n\s*\)\+\%$//e
+	call winrestview(l:saved_view)
+endfunction
 
 augroup format
   au!
