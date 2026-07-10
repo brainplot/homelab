@@ -23,6 +23,10 @@
 - name: Disable swap
   become: true
   block:
+    - name: Install dphys-swapfile
+      ansible.builtin.package:
+        name: dphys-swapfile
+
     - name: Run dphys-swapfile swapoff
       ansible.builtin.command: dphys-swapfile swapoff
 
