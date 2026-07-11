@@ -1,0 +1,7 @@
+- name: Generate locales
+  become: true
+  ansible.builtin.command: locale-gen
+
+- name: Set default system locale
+  become: true
+  ansible.builtin.command: update-locale --reset LANG={{ lang | quote }} LANGUAGE={{ language | quote }}
