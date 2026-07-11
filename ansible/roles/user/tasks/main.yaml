@@ -1,0 +1,10 @@
+- name: Configure {{ ansible_facts['user_id'] }}
+  become: true
+  ansible.builtin.user:
+    name: '{{ ansible_facts["user_id"] }}'
+    comment: ''
+    password: '*'
+    generate_ssh_key: true
+    ssh_key_comment: '{{ ansible_facts["user_id"] }}@{{ ansible_facts["hostname"] }}'
+    ssh_key_type: ed25519
+    state: present

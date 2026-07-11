@@ -5,6 +5,7 @@
 - name: Set up common things
   hosts: all
   roles:
+    - user
     - locale
     - etchosts
     - pki
