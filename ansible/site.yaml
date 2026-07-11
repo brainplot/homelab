@@ -18,3 +18,8 @@
 - name: Configure Raspberry Pis
   hosts: rpis
   roles: [raspberrypi]
+
+- name: Configure Servers
+  hosts: servers
+  roles:
+    - podman
