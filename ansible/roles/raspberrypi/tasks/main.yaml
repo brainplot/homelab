@@ -14,12 +14,6 @@
         insertafter: dtoverlay=disable-wifi
       notify: Reboot
 
-    - name: Set kernel cmdline
-      ansible.builtin.template:
-        dest: /boot/firmware/cmdline.txt
-        src: cmdline.txt.j2
-        follow: true
-
 - name: Disable swap
   become: true
   block:
