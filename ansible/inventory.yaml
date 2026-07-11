@@ -1,11 +1,4 @@
 rpis:
   hosts:
-    ares: ~
-
-kubernetescontrolplane:
-  hosts:
-    ares: ~
-
-kubernetesnodes:
-  hosts:
-    ares: ~
+    mercury:
+      ansible_host: 192.168.10.2
