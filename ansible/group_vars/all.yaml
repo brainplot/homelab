@@ -7,5 +7,6 @@ lang: en_US.UTF-8
 language: en_US
 domain: home.arpa
 timezone: Etc/UTC
+zram_size: min(ram / 2, 1024)
 
 ingress_nginx_external_ip: 100.64.0.2

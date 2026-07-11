@@ -32,3 +32,11 @@
           [Main]
           Mechanism=none
       notify: Reboot
+
+- name: Configure zram
+  become: true
+  ansible.builtin.template:
+    src: zram-generator.conf.j2
+    dest: /etc/systemd/zram-generator.conf
+    mode: '0644'
+  notify: Reboot
